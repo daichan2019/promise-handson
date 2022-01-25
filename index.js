@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   function synchronousSleep(ms) {
     const start = new Date();
+    console.log(start);
+    // 引数ミリ秒間ループ処理を行う
     while (new Date() - start < ms);
   }
 
