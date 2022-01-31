@@ -25,68 +25,32 @@ JavaScript もこの仕組みで動いています。
 画面下部に、単に`clickできたね!`と、console に出力するだけの`click me!`というボタンを用意しました。
 ある処理が実行されているときに、他の処理が実行できるかどうかをこのボタンをクリックすることで検証します。
 
-console に`clickできたね!`と出力されるのが確認できたかと思います。
+ボタンをクリックし、console に`clickできたね!`と出力されることを確認しておきましょう。
 
-`clickしたら画面が固まってしまいます。`ボタンを click してみましょう。
-このとき`clickできたね!`ボタンを押してみてください。
+ここからは、同期処理と非同期処理の違いをブラウザ上で見ていきます。
+まずは、`clickしたら画面が固まってしまいます。`ボタンを click してみましょう。
+その後、`clickできたね!`ボタンを押してみてください。
 
-押せますか??
-画面が固まって押しても console には`clickできたね!`と出力されません。
+押せますか?
+画面が固まってしまい、押そうとしてもボタンは反応せず、 console には`clickできたね!`とは出力されません。
 
-一方で、`clickしても画面が固まりません。`を押してみてください。
-その後に`clickできたね!`ボタンを押してみましょう。
+次に、`clickしても画面が固まりません。`を押してみましょう。
+立て続けに`clickできたね!`ボタンも押してみましょう。
 
-押せますか??押せますね。
+押せますか?
+押せますね。
 
 console に`clickできたね!`が出力されるのが確認できるかと思います。
 
-`clickしたら画面が固まってしまいます。`ボタンを click したときに実行される関数は以下のようになっています。
-
-click 時まずはじめに`同期処理開始`と console に出力します。
-
-その後、`synchronousSleep`という関数を実行し、最後に`同期処理完了`と console に出力しています。
+`clickしたら画面が固まってしまいます。`ボタンをクリックすると、以下の順に処理が実行されます。
+`同期処理開始`~`同期処理完了`までの間に`synchronousSleep(10000)`が実行されますが、この間にはブラウザ上のどんな処理も受け付けなくなってしまいます。
 
 ```js
 document.querySelector(".js-sync-button").addEventListener("click", () => {
   console.log("同期処理開始");
-  synchronousSleep(5000);
+  synchronousSleep(10000);
   console.log("同期処理完了");
 });
-```
-
-この`synchronousSleep`という関数が実行されている間は、画面が固まってしまいます（他にどんな処理も受け付けなくなる）。
-指定のミリ秒間`while`でループ処理を行うことで、UI スレッドを独占してしまう関数です。
-
-```js
-function synchronousSleep(ms) {
-  const start = new Date();
-  // 引数ミリ秒間ループ処理を行う
-  while (new Date() - start < ms);
-}
-```
-
-一方で、`clickしても画面が固まりません。`ボタンを押したときの処理の中身を見てみましょう。
-`async / await`という何やら見慣れない単語が出てきましたね。これについては後ほど説明します。
-`sleep`関数以外は先程とほぼ同じです。
-
-```js
-document
-  .querySelector(".js-async-button")
-  .addEventListener("click", async () => {
-    console.log("非同期処理開始");
-    await sleep(5000);
-    console.log("非同期処理終了");
-  });
-```
-
-```js
-async function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-}
 ```
 
 ### 結局「非同期」だと何がうれしいの?

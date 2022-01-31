@@ -14,7 +14,7 @@ async function sleep(ms) {
 
 document.querySelector(".js-sync-button").addEventListener("click", () => {
   console.log("同期処理開始");
-  synchronousSleep(5000);
+  synchronousSleep(10000);
   console.log("同期処理完了");
 });
 
