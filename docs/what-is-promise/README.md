@@ -88,7 +88,7 @@ async function sleep(ms) {
 
 外部からデータを取得するたびに画面が固まってしまうのは非常にイライラしませんか。
 
-非同期的にデータを取得したり、重い処理を実行することで、ユーザはその処理の完了を待たずに、サイトを閲覧したり、アプリケーションを使う事ができます。
+非同期的にデータを取得したり、重い処理を実行することで、ユーザーはその処理の完了を待たずに、サイトを閲覧したり、アプリケーションを使う事ができます。
 
 ## 非同期処理の記述の歴史
 
@@ -142,4 +142,69 @@ wait(1000, () => {
 かなりネストが深くなって、見づらいですね。
 これを人は`callback地獄`と呼びました。
 
+感の鋭い人は上記の関数を見て、下記の処理でも同じことできるんじゃない?と思うかもしれません。
+
+```js
+setTimeout(() => console.log("1"), 1000);
+setTimeout(() => console.log("2"), 1000);
+setTimeout(() => console.log("3"), 1000);
+```
+
+これは、一つ前の処理を待たずに、1 秒後に同時に 1,2,3 が出てきてしまいます。
+前の処理を待ってから次の処理を行いたいときは callback 関数を使うしかなかったのです。
+
 ### Promise を使用した方法
+
+JavaScript の ES2015 が発表され、JS の記述方法が大きく変わりました。この ES2015 から Promise が登場します。以下のように書きます。
+
+```js
+const myPromise = new Promise((resolve) => {
+  //1秒後に実行する処理
+  setTimeout(() => {
+    console.log("1");
+    //無事処理が終わったことを伝える
+    resolve();
+  }, 1000);
+}).then(() => {
+  // 処理が無事終わったことを受けとって実行される処理
+  console.log("2");
+});
+console.log(myPromise);
+```
+
+Promise とは、非同期処理の完了 (もしくは失敗) の結果およびその結果の値を表します。
+Promise には、下記に示す３つの状態があります。
+その状態に応じて処理をを分岐させることが可能です。
+
+- pending: 初期状態。成功も失敗もしていません。
+- resolved: 処理が成功して完了したことを意味します。
+- rejected: 処理が失敗したことを意味します。
+
+Promise が作られたときは`pending`という状態ですが、処理が成功したときに `resolved`に変わり、`then`に書かれた処理が実行されます。
+処理が失敗したときは状態が`rejected`に変わり、`catch`に書かれた処理が実行されます。
+では実際に手を動かして、`Promise`の状態を見ていきましょう。
+
+### `Promise`の書き方
+
+```js
+const promise = new Promise((resolve, reject) => {});
+```
+
+`console.log(promise)`で見てみましょう。
+`PromiseStatus`が`pending`であることを確認できるかと思います。
+
+`resolve`も`reject`もされてない初期状態ですので`pending`ですね。
+
+`resolve`させてみましょう。
+
+```js
+const promise = new Promise((resolve) => {
+  resolve();
+}).then(() => {
+  console.log("resolve done!");
+});
+```
+
+再度`console.log(promise)`で見てみましょう。
+
+`resolve done`という文字列が見えてると思います。無事処理が成功し、`then`の処理が実行されていることが確認できましたね。
